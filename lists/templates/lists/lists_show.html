@@ -10,13 +10,20 @@
 </head>
 
 <body>
-    <h1>Start a new List</h1>
+    <h1>Task Manager</h1>
 
-    <form action="/" method="post">
+    <form action="/lists/{{ list_id }}/add_task" method="post">
         {% csrf_token %}
         <input type="text" id="new-task" name="title" placeholder="Enter a new task">
     </form>
 
+    <table id="tasks-table">
+        {% for task in tasks %}
+        <tr>
+            <td>{{ forloop.counter }}. {{ task.title }}</td>
+        </tr>
+        {% endfor %}
+    </table>
 </body>
 
 </html>
