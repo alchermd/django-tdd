@@ -39,6 +39,20 @@ class ListViewTest(TestCase):
         self.assertTemplateUsed(response, 'lists/lists_show.html')
 
 
+class NewListTest(TestCase):
+
+    def test_can_save_a_POST_request(self):
+        self.client.post('/', data={'title': 'A new task'})
+        self.assertEqual(Task.objects.count(), 1)
+
+        new_task = Task.objects.first()
+        self.assertEqual(new_task.title, 'A new task')
+
+    def test_redirects_after_POST(self):
+        response = self.client.post('/', data={'title': 'A new task'})
+        self.assertRedirects(response, '/lists/foobar')
+
+
 class TaskModelTest(TestCase):
 
     def test_saving_and_retrieving_tasks(self):
