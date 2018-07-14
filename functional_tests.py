@@ -41,7 +41,8 @@ class NewVisitorTest(unittest.TestCase):
         table = self.browser.find_element_by_id('tasks-table')
         rows = table.find_elements_by_tag_name('tr')
         self.assertTrue(
-            any(row.text == '1. Buy a new laptop' for row in rows)
+            any(row.text == '1. Buy a new laptop' for row in rows),
+            msg="The new task didn't appear in the table."
         )
 
         self.fail('Unfinished test...')
