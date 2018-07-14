@@ -1,11 +1,12 @@
 from django.shortcuts import render, redirect
 
-from .models import Task
+from .models import Task, List
 
 
 def home_page(request):
     if request.method == 'POST':
-        Task.objects.create(title=request.POST['title'])
+        list_ = List.objects.create()
+        Task.objects.create(title=request.POST['title'], list=list_)
         return redirect('/lists/foobar')
 
     return render(request, 'lists/home.html',)

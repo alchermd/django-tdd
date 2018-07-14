@@ -1,6 +1,6 @@
 from django.test import TestCase
 
-from .models import Task
+from .models import Task, List
 
 
 class HomePageTest(TestCase):
@@ -26,8 +26,9 @@ class HomePageTest(TestCase):
 class ListViewTest(TestCase):
 
     def test_displays_all_tasks(self):
-        Task.objects.create(title='Task 1')
-        Task.objects.create(title='Task 2')
+        list_ = List.objects.create()
+        Task.objects.create(title='Task 1', list=list_)
+        Task.objects.create(title='Task 2', list=list_)
 
         response = self.client.get('/lists/foobar')
 
@@ -56,16 +57,27 @@ class NewListTest(TestCase):
 class TaskModelTest(TestCase):
 
     def test_saving_and_retrieving_tasks(self):
-        first_task = Task()
-        first_task.title = 'My first task'
-        first_task.save()
+        list_ = List.objects.create()
 
-        second_task = Task()
-        second_task.title = 'My second task'
-        second_task.save()
+        first_task = Task.objects.create(title='My first task', list=list_)
+        second_task = Task.objects.create(title='My second task', list=list_)
 
         saved_tasks = Task.objects.all()
         self.assertEqual(saved_tasks.count(), 2)
 
         self.assertEqual(saved_tasks[0].title, 'My first task')
         self.assertEqual(saved_tasks[1].title, 'My second task')
+
+
+class ListModelTest(TestCase):
+
+    def test_saving_and_retrieving_lists(self):
+        list_ = List.objects.create()
+
+        first_task = Task(title='The first task', list=list_)
+        second_task = Task(title='The second task', list=list_)
+
+        saved_list = List.objects.first()
+        self.assertEqual(saved_list, list_)
+        self.assertEqual(first_task.list, list_)
+        self.assertEqual(second_task.list, list_)
