@@ -15,30 +15,37 @@ class HomePageTest(TestCase):
         self.assertEqual(1, Task.objects.count())
         new_task = Task.objects.first()
         self.assertIn('A new task item', new_task.title)
-    
+
     def test_redirects_after_POST(self):
         response = self.client.post('/', data={'title': 'A new task item'})
 
         self.assertEqual(302, response.status_code)
-        self.assertEqual('/', response['location'])
+        self.assertEqual(response['location'], '/lists/foobar')
 
-    def test_displays_multiple_tasks(self):
+
+class ListViewTest(TestCase):
+
+    def test_displays_all_tasks(self):
         Task.objects.create(title='Task 1')
         Task.objects.create(title='Task 2')
 
-        response = self.client.get('/')
+        response = self.client.get('/lists/foobar')
 
-        self.assertIn('Task 1', response.content.decode())
-        self.assertIn('Task 2', response.content.decode())
+        self.assertContains(response, 'Task 1')
+        self.assertContains(response, 'Task 1')
+
+    def test_uses_list_template(self):
+        response = self.client.get('/lists/foobar')
+        self.assertTemplateUsed(response, 'lists/lists_show.html')
 
 
 class TaskModelTest(TestCase):
-    
+
     def test_saving_and_retrieving_tasks(self):
         first_task = Task()
         first_task.title = 'My first task'
         first_task.save()
-        
+
         second_task = Task()
         second_task.title = 'My second task'
         second_task.save()
