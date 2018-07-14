@@ -37,10 +37,7 @@ class NewVisitorTest(unittest.TestCase):
         # "1. Buy a new laptop" as a new task
         input_box.send_keys(Keys.ENTER)
         time.sleep(1)
-
-        table = self.browser.find_element_by_id('tasks-table')
-        rows = table.find_elements_by_tag_name('tr')
-        self.assertIn('1. Buy a new laptop', [row.text for row in rows])
+        self.check_for_row_in_tasks_table('1. Buy a new laptop')
 
         # There is still a text box inviting him to add another task.
         # He enters "Buy a new keyboard"
@@ -50,10 +47,8 @@ class NewVisitorTest(unittest.TestCase):
         time.sleep(1)
 
         # The page updates again, showing both of the tasks
-        table = self.browser.find_element_by_id('tasks-table')
-        rows = table.find_elements_by_tag_name('tr')
-        self.assertIn('1. Buy a new laptop', [row.text for row in rows])
-        self.assertIn('2. Buy a new keyboard', [row.text for row in rows])
+        self.check_for_row_in_tasks_table('1. Buy a new laptop')
+        self.check_for_row_in_tasks_table('2. Buy a new keyboard')
 
         self.fail('Unfinished test...')
 
@@ -62,6 +57,11 @@ class NewVisitorTest(unittest.TestCase):
         # Some explanatory text is displayed for that effect.
 
         # He visits that URL -- the tasks are still there.
+
+    def check_for_row_in_tasks_table(self, row_text):
+        table = self.browser.find_element_by_id('tasks-table')
+        rows = table.find_elements_by_tag_name('tr')
+        self.assertIn(row_text, [row.text for row in rows])
 
 
 if __name__ == '__main__':
