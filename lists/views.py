@@ -1,7 +1,12 @@
-from django.http import HttpResponse
-from django.shortcuts import render
+from django.shortcuts import render, redirect
+
+from .models import Task
 
 def home_page(request):
+    if request.method == 'POST':
+        Task.objects.create(title=request.POST['title'])
+        return redirect('/')
+
     return render(request, 'lists/home.html', {
-        'new_task_title': request.POST.get('title', ''),
+        'tasks': Task.objects.all(),
     })

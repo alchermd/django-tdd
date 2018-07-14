@@ -11,8 +11,25 @@ class HomePageTest(TestCase):
 
     def test_can_save_a_POST_request(self):
         response = self.client.post('/', data={'title': 'A new task item'})
-        self.assertIn('A new task item', response.content.decode())
-        self.assertTemplateUsed(response, 'lists/home.html')
+
+        self.assertEqual(1, Task.objects.count())
+        new_task = Task.objects.first()
+        self.assertIn('A new task item', new_task.title)
+    
+    def test_redirects_after_POST(self):
+        response = self.client.post('/', data={'title': 'A new task item'})
+
+        self.assertEqual(302, response.status_code)
+        self.assertEqual('/', response['location'])
+
+    def test_displays_multiple_tasks(self):
+        Task.objects.create(title='Task 1')
+        Task.objects.create(title='Task 2')
+
+        response = self.client.get('/')
+
+        self.assertIn('Task 1', response.content.decode())
+        self.assertIn('Task 2', response.content.decode())
 
 
 class TaskModelTest(TestCase):
@@ -31,6 +48,3 @@ class TaskModelTest(TestCase):
 
         self.assertEqual(saved_tasks[0].title, 'My first task')
         self.assertEqual(saved_tasks[1].title, 'My second task')
-
-
-

@@ -18,9 +18,11 @@
     </form>
 
     <table id="tasks-table">
+        {% for task in tasks %}
         <tr>
-            <td>1. {{ new_task_title }}</td>
+            <td>{{ forloop.counter }}. {{ task.title }}</td>
         </tr>
+        {% endfor %}
     </table>
 </body>
 
