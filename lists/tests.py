@@ -16,27 +16,28 @@ class HomePageTest(TestCase):
         new_task = Task.objects.first()
         self.assertIn('A new task item', new_task.title)
 
-    def test_redirects_after_POST(self):
-        response = self.client.post('/', data={'title': 'A new task item'})
-
-        self.assertEqual(302, response.status_code)
-        self.assertEqual(response['location'], '/lists/foobar')
-
 
 class ListViewTest(TestCase):
 
-    def test_displays_all_tasks(self):
+    def test_displays_all_tasks_for_that_list(self):
         list_ = List.objects.create()
         Task.objects.create(title='Task 1', list=list_)
         Task.objects.create(title='Task 2', list=list_)
 
-        response = self.client.get('/lists/foobar')
+        another_list = List.objects.create()
+        Task.objects.create(title='Task 1 for another list', list=another_list)
+        Task.objects.create(title='Task 2 for another list', list=another_list)
+
+        response = self.client.get(f'/lists/{list_.id}')
 
         self.assertContains(response, 'Task 1')
         self.assertContains(response, 'Task 1')
+        self.assertNotContains(response, 'Task 1 for another list')
+        self.assertNotContains(response, 'Task 2 for another list')
 
     def test_uses_list_template(self):
-        response = self.client.get('/lists/foobar')
+        list_ = List.objects.create()
+        response = self.client.get(f'/lists/{list_.id}')
         self.assertTemplateUsed(response, 'lists/lists_show.html')
 
 
@@ -51,7 +52,35 @@ class NewListTest(TestCase):
 
     def test_redirects_after_POST(self):
         response = self.client.post('/', data={'title': 'A new task'})
-        self.assertRedirects(response, '/lists/foobar')
+        new_list = List.objects.first()
+        self.assertRedirects(response, f'/lists/{new_list.id}')
+
+
+class NewTaskTest(TestCase):
+
+    def test_can_save_a_POST_request_to_an_existing_list(self):
+        correct_list = List.objects.create()
+        other_list = List.objects.create()
+
+        self.client.post(
+            f'/lists/{correct_list.id}/add_task',
+            data={'title': 'New task for existing list'}
+        )
+
+        self.assertEqual(Task.objects.count(), 1)
+        new_task = Task.objects.first()
+        self.assertEqual(new_task.title, 'New task for existing list')
+        self.assertEqual(new_task.list, correct_list)
+
+    def test_redirects_to_list_view(self):
+        correct_list = List.objects.create()
+
+        response = self.client.post(
+            f'/lists/{correct_list.id}/add_task',
+            data={'title': 'New task for existing list'}
+        )
+
+        self.assertRedirects(response, f'/lists/{correct_list.id}')
 
 
 class TaskModelTest(TestCase):

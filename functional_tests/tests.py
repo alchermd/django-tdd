@@ -24,7 +24,7 @@ class NewVisitorTest(LiveServerTestCase):
         # He notices the page title and header mentions about tasks.
         self.assertIn('Task', self.browser.title)
         header_text = self.browser.find_element_by_tag_name('h1').text
-        self.assertIn('Task Manager', header_text)
+        self.assertIn('Start a new List', header_text)
 
         # He is invited to enter a task right away.
         input_box = self.browser.find_element_by_id('new-task')
@@ -50,14 +50,6 @@ class NewVisitorTest(LiveServerTestCase):
         # The page updates again, showing both of the tasks
         self.wait_for_row_in_tasks_table('1. Buy a new laptop')
         self.wait_for_row_in_tasks_table('2. Buy a new keyboard')
-
-        self.fail('Unfinished test...')
-
-        # John wonders if the site will remember his tasks.
-        # Then he sees that the site generated a unique URL for him.
-        # Some explanatory text is displayed for that effect.
-
-        # He visits that URL -- the tasks are still there.
 
     def test_can_start_a_list_for_multiple_users_with_unique_urls(self):
         # John started a new list
