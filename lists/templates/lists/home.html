@@ -12,9 +12,18 @@
 <body>
     <h1>Task Manager</h1>
 
-    <input type="text" id="new-task" placeholder="Enter a new task">
+    <form action="" method="post">
+        {% csrf_token %}
+        <input type="text" id="new-task" name="title" placeholder="Enter a new task">
+    </form>
 
-    <table id="tasks-table"></table>
+    <table id="tasks-table">
+        {% for task in tasks %}
+        <tr>
+            <td>{{ forloop.counter }}. {{ task.title }}</td>
+        </tr>
+        {% endfor %}
+    </table>
 </body>
 
 </html>
